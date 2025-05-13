@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPSC Prelims CSAT 2024 Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">UPSC Prelims CSAT 2024 Simulator (Paper II - Set A)</h1>
+        <div class="flex justify-between mb-4">
+            <div>
+                <p id="timer" class="text-lg">Time: 00:00</p>
+            </div>
+            <div>
+                <p class="text-lg">Question <span id="currentQuestion">1</span> of 80</p>
+            </div>
+        </div>
+
+        <div id="questionContainer" class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <div class="flex justify-between mb-4">
+            <button id="prevBtn" onclick="prevQuestion()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Previous</button>
+            <button id="markBtn" onclick="markQuestion()" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Mark for Review</button>
+            <button id="nextBtn" onclick="nextQuestion()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Next</button>
+        </div>
+
+        <div class="grid grid-cols-10 gap-2 mb-4">
+            <!-- Question navigation buttons -->
+            <script>
+                for (let i = 1; i <= 80; i++) {
+                    document.write(`<button id="navBtn${i}" onclick="goToQuestion(${i})" class="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400">${i}</button>`);
+                }
+            </script>
+        </div>
+
+        <button id="submitBtn" onclick="submitTest()" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 w-full">Submit Test</button>
+
+        <div id="resultContainer" class="mt-6 hidden">
+            <h2 class="text-2xl font-bold mb-4">Test Results</h2>
+            <p id="score" class="text-lg mb-2"></p>
+            <p id="correct" class="text-lg mb-2"></p>
+            <p id="wrong" class="text-lg mb-2"></p>
+            <p id="unattempted" class="text-lg mb-2"></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Which of the following statements best reflect the most logical and rational inferences that can be made from the passage?<br>1. The current methods of food distribution are solely responsible for the loss and wastage of food.<br>2. Land productivity is adversely affected by the prevailing trend of food loss and wastage.<br>3. Reduction in the loss and wastage of food results in lesser carbon footprint.<br>4. Post-harvest technologies to prevent or reduce the loss and wastage of food are not available.<br>Select the correct answer using the code given below.",
+                options: ["(a) 1, 2 and 3", "(b) 2 and 3 only", "(c) 1, 3 and 4", "(d) 1, 2 and 4"],
+                answer: "(b)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. The food distribution mechanism needs to be reimagined and made effective to reduce the loss and wastage of food.<br>2. Ensuring the reduction of wastage and loss of food is a social and moral responsibility of all citizens.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(a)"
+            },
+            {
+                question: "Which of the following statements best reflects/reflect the most logical and rational inference/inferences that can be made from the passage?<br>1. Central banks cannot bring down inflation without budgetary backing.<br>2. The effects of monetary policy depend on the fiscal policies pursued by the government.<br>Select the correct answer using the code given below.",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(b)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. Fiscal policies of governments are solely responsible for higher prices.<br>2. Higher prices do not affect the long-term government bonds.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(d)"
+            },
+            {
+                question: "What is the least possible number of cuts required to cut a cube into 64 identical pieces?",
+                options: ["(a) 8", "(b) 9", "(c) 12", "(d) 16"],
+                answer: "(b)"
+            },
+            {
+                question: "In the expression 5 * 4 * 3 * 2 * 1, * is chosen from +, -, × each at most two times. What is the smallest non-negative value of the expression?",
+                options: ["(a) 3", "(b) 2", "(c) 1", "(d) 0"],
+                answer: "(d)"
+            },
+            {
+                question: "A certain number of men can complete a piece of work in 6k days, where k is a natural number. By what percent should the number of men be increased so that the work can be completed in 5k days?",
+                options: ["(a) 10%", "(b) (50/3)%", "(c) 20%", "(d) 25%"],
+                answer: "(c)"
+            },
+            {
+                question: "X, Y and Z can complete a piece of work individually in 6 hours, 8 hours and 8 hours respectively. However, only one person at a time can work in each hour and nobody can work for two consecutive hours. All are engaged to finish the work. What is the minimum amount of time that they will take to finish the work?",
+                options: ["(a) 6 hours 15 minutes", "(b) 6 hours 30 minutes", "(c) 6 hours 45 minutes", "(d) 7 hours"],
+                answer: "(d)"
+            },
+            {
+                question: "How many consecutive zeros are there at the end of the integer obtained in the product 1² × 2⁴ × 3⁶ × 4⁸ × ... × 25⁵⁰?",
+                options: ["(a) 50", "(b) 55", "(c) 100", "(d) 200"],
+                answer: "(d)"
+            },
+            {
+                question: "On January 1st, 2023, a person saved ₹ 1. On January 2nd, 2023, he saved ₹ 2 more than that on the previous day. On January 3rd, 2023, he saved ₹ 2 more than that on the previous day and so on. At the end of which date was his total savings a perfect square as well a perfect cube?",
+                options: ["(a) 7th January, 2023", "(b) 8th January, 2023", "(c) 9th January, 2023", "(d) Not possible"],
+                answer: "(b)"
+            },
+            {
+                question: "Which one of the following statements best reflects the most logical and rational inference that can be made from the above passage?",
+                options: ["(a) Curriculum for urban planning courses should have diverse and interdisciplinary approach.", "(b) In India, city administration is under bureaucracy which lacks formal training in urban planning and management.", "(c) In India, the management of urban areas is a local affair with a chronic problem of insufficient funds.", "(d) With high density of population and widespread poverty in our urban areas, planned development in them is very difficult."],
+                answer: "(a)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. India needs a new generation of urban professionals with knowledge relevant to modern urban practice.<br>2. Indian universities at present have no capacity or potential to impart training in systems approach.<br>Which of the assumptions given above is/are correct?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(a)"
+            },
+            {
+                question: "Which one of the following statements best reflects the central idea of the above passage?",
+                options: ["(a) Constructed as a marketplace of views, social media ensures instant access to information.", "(b) Social media are not ideal or moral institutions but the products built by companies to make profits.", "(c) Social media have been created to strengthen democracies.", "(d) In today's world, social media are inevitable for well-informed social life."],
+                answer: "(b)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. Internet is not inclusive enough.<br>2. Internet can adversely affect the quality of politics in a country.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(c)"
+            },
+            {
+                question: "222³³³ + 333²²² is divisible by which of the following numbers?",
+                options: ["(a) 2 and 3 but not 37", "(b) 3 and 37 but not 2", "(c) 2 and 37 but not 3", "(d) 2, 3 and 37"],
+                answer: "(b)"
+            },
+            {
+                question: "What percent of water must be mixed with honey so as to gain 20% by selling the mixture at the cost price of honey?",
+                options: ["(a) 20%", "(b) 10%", "(c) 5%", "(d) 4%"],
+                answer: "(b)"
+            },
+            {
+                question: "What is the rightmost digit preceding the zeros in the value of 30³⁰?",
+                options: ["(a) 1", "(b) 3", "(c) 7", "(d) 9"],
+                answer: "(c)"
+            },
+            {
+                question: "421 and 427, when divided by the same number, leave the same remainder 1. How many numbers can be used as the divisor in order to get the same remainder 1?",
+                options: ["(a) 1", "(b) 2", "(c) 3", "(d) 4"],
+                answer: "(c)"
+            },
+            {
+                question: "A can X contains 399 litres of petrol and a can Y contains 532 litres of diesel. They are to be bottled in bottles of equal size so that whole of petrol and diesel would be separately bottled. The bottle capacity in terms of litres is an integer. How many different bottle sizes are possible?",
+                options: ["(a) 3", "(b) 4", "(c) 5", "(d) 6"],
+                answer: "(c)"
+            },
+            {
+                question: "Consider the following statements in respect of the sum S = x + y + z, where x, y and z are distinct prime numbers each less than 10:<br>1. The unit digit of S can be 0.<br>2. The unit digit of S can be 9.<br>3. The unit digit of S can be 5.<br>Which of the statements given above are correct?",
+                options: ["(a) 1 and 2 only", "(b) 2 and 3 only", "(c) 1 and 3 only", "(d) 1, 2 and 3"],
+                answer: "(b)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. For effective school education, parents have greater role than the governments.<br>2. School curriculum that conforms to today's requirements and is uniform for the entire country may address the issues brought out.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(b)"
+            },
+            {
+                question: "Which one of the following statements best reflects the central idea conveyed by the passage?",
+                options: ["(a) Total eradication of poverty in the country will resolve the issue of under-performance of our schoolchildren.", "(b) Monetary incentives to parents and teachers is a strategy to improve the children's academic performance.", "(c) Public policy should ensure that competencies and achievements of young people are aligned with their expectations.", "(d) India is not going to take advantage of the demographic dividend unless some school pass-outs go back to agriculture."],
+                answer: "(c)"
+            },
+            {
+                question: "Which one of the following statements best reflects the thinking of the author about the science?",
+                options: ["(a) Science must value the commitment of the scientists.", "(b) Science is a product of civilized society and must be used for the promotion of scientific awareness in people.", "(c) Industrial revolution was made possible by the advancements in science.", "(d) Science must pursue truth but be responsible for social welfare."],
+                answer: "(d)"
+            },
+            {
+                question: "Consider the sequence<br>A_BCD_BBCDABC_DABC_D<br>that follows a certain pattern. Which one of the following completes the sequence?",
+                options: ["(a) B, A, D, C", "(b) B, A, C, D", "(c) A, A, C, D", "(d) A, A, D, C"],
+                answer: "(c)"
+            },
+            {
+                question: "Two persons P and Q enter into a business. P puts ₹ 14,000 more than Q, but P has invested for 8 months and Q has invested for 10 months. If P's share is ₹ 400 more than Q's share out of the total profit of ₹ 2,000, what is the capital contributed by P?",
+                options: ["(a) ₹ 30,000", "(b) ₹ 26,000", "(c) ₹ 24,000", "(d) ₹ 20,000"],
+                answer: "(a)"
+            },
+            {
+                question: "P's salary is 20% lower than Q's salary which is 20% lower than R's salary. By how much percent is R's salary more than P's salary?",
+                options: ["(a) 48.75%", "(b) 56.25%", "(c) 60.50%", "(d) 62.25%"],
+                answer: "(b)"
+            },
+            {
+                question: "A number is mistakenly divided by 4 instead of multiplying by 4. What is the percentage change in the result due to this mistake?",
+                options: ["(a) 25%", "(b) 50%", "(c) 72.75%", "(d) 93.75%"],
+                answer: "(d)"
+            },
+            {
+                question: "In an examination, 80% of students passed in English, 70% of students passed in Hindi and 15% failed in both the subjects. What is the percentage of students who failed in only one subject?",
+                options: ["(a) 15%", "(b) 20%", "(c) 25%", "(d) 35%"],
+                answer: "(b)"
+            },
+            {
+                question: "A father said to his son, \"n years back I was as old as you are now. My present age is four times your age n years back\". If the sum of the present ages of the father and the son is 130 years, what is the difference of their ages?",
+                options: ["(a) 30 years", "(b) 32 years", "(c) 34 years", "(d) 36 years"],
+                answer: "(c)"
+            },
+            {
+                question: "Consider the following:<br>1. 1000 litres = 1 m³<br>2. 1 metric ton = 1000 kg<br>3. 1 hectare = 10000 m²<br>Which of the above are correct?",
+                options: ["(a) 1 and 2 only", "(b) 2 and 3 only", "(c) 1 and 3 only", "(d) 1, 2 and 3"],
+                answer: "(d)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. The horrors of modern life are the inevitable result of the progress of science.<br>2. The aspect of truth likely to be overlooked is that science is what man has made it.<br>Which of the assumptions given above is/are correct?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(d)"
+            },
+            {
+                question: "When we meet other people while we travel, we learn to differentiate between",
+                options: ["(a) imagination and understanding", "(b) communities and nationalities", "(c) local values and universal values", "(d) friends and foes"],
+                answer: "(b)"
+            },
+            {
+                question: "Consider the following sequence that follows a certain pattern: 1, 1, 2, 1, 3, 2, 1, 4, 3, 2, 1, 5, 4, 3, 2, ... What is the sum of the first 28 terms in the sequence?",
+                options: ["(a) 83", "(b) 84", "(c) 85", "(d) 86"],
+                answer: "(c)"
+            },
+            {
+                question: "With reference to the above passage, the following assumptions have been made:<br>1. Travel leads to an understanding of humans.<br>2. Travel helps those who wish to learn fundamental common values.<br>3. A person with long experience in travel can resolve differences amongst people.<br>Which of the assumptions given above are valid?",
+                options: ["(a) 1 and 2 only", "(b) 2 and 3 only", "(c) 1 and 3 only", "(d) 1, 2 and 3"],
+                answer: "(b)"
+            },
+            {
+                question: "Let X be a two-digit number and Y be another two-digit number formed by interchanging the digits of X. If (X + Y) is the greatest two-digit number, then what is the number of possible values of X?",
+                options: ["(a) 2", "(b) 4", "(c) 6", "(d) 8"],
+                answer: "(d)"
+            },
+            {
+                question: "Consider the following:<br>Weight of 6 boys = Weight of 7 girls = Weight of 3 men = Weight of 4 women<br>If the average weight of the women is 63 kg, then what is the average weight of the boys?",
+                options: ["(a) 40 kg", "(b) 42 kg", "(c) 45 kg", "(d) 63 kg"],
+                answer: "(b)"
+            },
+            {
+                question: "How many times the hour hand and the minute hand coincide in a clock between 10:00 a.m. and 2:00 p.m. (same day)?",
+                options: ["(a) 3 times", "(b) 4 times", "(c) 5 times", "(d) 6 times"],
+                answer: "(a)"
+            },
+            {
+                question: "The calendar for the year 2025 is same for",
+                options: ["(a) 2029", "(b) 2030", "(c) 2031", "(d) 2033"],
+                answer: "(d)"
+            },
+            {
+                question: "Let p, q, r and s be distinct positive integers. Let p, q be odd and r, s be even. Consider the following statements:<br>1. (p - r)²(qs) is even.<br>2. (q - s)q²s is even.<br>3. (q + r)²(p + s) is odd.<br>Which of the statements given above are correct?",
+                options: ["(a) 1 and 2 only", "(b) 2 and 3 only", "(c) 1 and 3 only", "(d) 1, 2 and 3"],
+                answer: "(c)"
+            },
+            {
+                question: "What is the angle between the minute hand and hour hand when the clock shows 4:25 hours?",
+                options: ["(a) 12.5°", "(b) 15°", "(c) 17.5°", "(d) 20°"],
+                answer: "(d)"
+            },
+            {
+                question: "Which of the following statements best reflects/reflect the most logical and rational inference/inferences that can be made from the passage?<br>1. In conventional classroom learning, the central goal is duration of learning rather than attainment of competency.<br>2. Conventional classrooms encourage one-size-fits-all approach and stamp out all differentiation.<br>Select the correct answer using the code given below.",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(c)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. As a large number of workers in our country are employed in unorganized sector, India does not need to change its present conventional classroom system of education.<br>2. Even with its present conventional classroom system of education, India produces sufficient number of skilled workers to fully realize the benefits of demographic dividend.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(d)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. The adolescent does not feel comfortable with his parents because they tend to be dominating and assertive.<br>2. The adolescent of modern times does not have much respect for parents.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(a)"
+            },
+            {
+                question: "Which one of the following statements best reflects the central idea of the above passage?",
+                options: ["(a) Parents in general may not be of much help when children are on their way to becoming adults.", "(b) When children reach adolescence, involvement of parents in their lives is unnecessary.", "(c) Modern-day nuclear families are not capable of bringing up children properly.", "(d) In modern societies, adolescents tend to be stubborn, disobedient and careless."],
+                answer: "(a)"
+            },
+            {
+                question: "What is the number of fives used in numbering a 260-page book?",
+                options: ["(a) 55", "(b) 56", "(c) 57", "(d) 60"],
+                answer: "(b)"
+            },
+            {
+                question: "What is the sum of the first 28 terms in the following sequence?<br>1, 1, 2, 1, 3, 2, 1, 4, 3, 2, 1, 5, 4, 3, 2, ...",
+                options: ["(a) 83", "(b) 84", "(c) 85", "(d) 86"],
+                answer: "(c)"
+            },
+            {
+                question: "A person buys three articles P, Q and R for ₹ 3,330. If P costs 25% more than R and R costs 20% more than Q, then what is the cost of P?",
+                options: ["(a) ₹ 1,000", "(b) ₹ 1,200", "(c) ₹ 1,250", "(d) ₹ 1,350"],
+                answer: "(d)"
+            },
+            {
+                question: "If the sum of the two-digit numbers AB and CD is the three-digit number 1CE, where the letters A, B, C, D, E denote distinct digits, then what is the value of A?",
+                options: ["(a) 9", "(b) 8", "(c) 7", "(d) Cannot be determined due to insufficient data"],
+                answer: "(d)"
+            },
+            {
+                question: "Three numbers x, y, z are selected from the set of the first seven natural numbers such that x > 2y > 3z. How many such distinct triplets (x, y, z) are possible?",
+                options: ["(a) One triplet", "(b) Two triplets", "(c) Three triplets", "(d) Four triplets"],
+                answer: "(c)"
+            },
+            {
+                question: "The total cost of 4 oranges, 6 mangoes and 8 apples is equal to twice the total cost of 1 orange, 2 mangoes and 5 apples. Consider the following statements:<br>1. The total cost of 3 oranges, 5 mangoes and 9 apples is equal to the total cost of 4 oranges, 6 mangoes and 8 apples.<br>2. The total cost of one orange and one mango is equal to the cost of one apple.<br>Which of the statements given above is/are correct?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(c)"
+            },
+            {
+                question: "Which one of the following statements best reflects the most logical, rational and practical suggestion implied by the passage?",
+                options: ["(a) It is a cheap and practical method to produce limestone at commercial level for building purposes.", "(b) This can be used as one of the methods of carbon sequestration.", "(c) Basalt rock can be made a good source of calcium and magnesium minerals by this method.", "(d) Good rock-dissolving acid can be produced by mixing carbon dioxide and water."],
+                answer: "(b)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. Giant icebergs have a bearing on primary productivity and food chains of the Southern Ocean.<br>2. Melting of giant icebergs can produce climate change effects and impact world fisheries.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(a)"
+            },
+            {
+                question: "Which one of the following statements best reflects the most logical, rational and practical message conveyed by the passage?",
+                options: ["(a) Farmers can use caterpillars to feed on weeds in their crop fields/plantations.", "(b) This finding can help in the development of clinically useful antimicrobial compounds.", "(c) This finding can help in the development of organic, ecologically sustainable pesticides.", "(d) Caterpillars can be genetically modified to be predators of the other plant pests."],
+                answer: "(b)"
+            },
+            {
+                question: "32⁵ + 2²⁷ is divisible by",
+                options: ["(a) 3", "(b) 7", "(c) 10", "(d) 11"],
+                answer: "(b)"
+            },
+            {
+                question: "Let p and q be positive integers satisfying p < q and p + q = k. What is the smallest value of k that does not determine p and q uniquely?",
+                options: ["(a) 3", "(b) 4", "(c) 5", "(d) 6"],
+                answer: "(c)"
+            },
+            {
+                question: "A person walks 100 m straight from his house, turns left and walks 100 m, again turns left and walks 300 m, then turns right and walks 100 m to reach his office. In which direction does he walk initially from his house if his office is exactly in the North-East direction?",
+                options: ["(a) North-West", "(b) West", "(c) South", "(d) South-West"],
+                answer: "(c)"
+            },
+            {
+                question: "A person walks 100 m Westward, then turns left and walks 100 m. He then takes 225° turn clockwise. In which direction is he walking now?",
+                options: ["(a) South-West", "(b) South-East", "(c) North-West", "(d) North-East"],
+                answer: "(c)"
+            },
+            {
+                question: "A Statement is given followed by two Conclusions numbered I and II. Consider the Statement and the Conclusions.<br>Statement: India is the world's largest producer of milk.<br>Conclusion-I: India is the world's largest exporter of milk.<br>Conclusion-II: India does not import milk.<br>Which one of the following is correct?",
+                options: ["(a) Only Conclusion-I follows", "(b) Only Conclusion-II follows", "(c) Both Conclusion-I and Conclusion-II follow", "(d) Neither Conclusion-I nor Conclusion-II follows"],
+                answer: "(d)"
+            },
+            {
+                question: "A Question is given followed by two Statements I and II. Consider the Question and the Statements.<br>Question: What are the values of m and n, where m and n are natural numbers?<br>Statement-I: m + n > mn and m > n.<br>Statement-II: The product of m and n is 24.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(c)"
+            },
+            {
+                question: "A Question is given followed by two Statements I and II. Consider the Question and the Statements.<br>Question: What is the time required to download the software?<br>Statement-I: The size of the software is 12 megabytes.<br>Statement-II: The transfer rate is 2.4 kilobytes per second.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(c)"
+            },
+            {
+                question: "Which one of the following statements best reflects the crux of the above passage?",
+                options: ["(a) Responsible media should not distort the real in an ideal democracy.", "(b) Fake news seems inherent in the life of an ideal democracy.", "(c) There should not be any kind of restrictions on the freedom of expression in an ideal democracy.", "(d) Irresponsible media and political leaders cannot be effectively controlled in an ideal democracy."],
+                answer: "(a)"
+            },
+            {
+                question: "Which one of the following statements best reflects the most logical, rational and practical message implied by the passage?",
+                options: ["(a) Knowledge of consumer behaviour leads to more capital expenditure in manufacturing sector.", "(b) Knowledge of consumer behaviour stimulates the growth of commerce and trade and thus helps in the overall economic development of the country.", "(c) Interconnected devices give a lot of comfort to home users and improve the overall quality of life.", "(d) Interconnected devices can be at security risk and home users may have privacy risk."],
+                answer: "(d)"
+            },
+            {
+                question: "Which one of the following statements best reflects the crux of the above passage?",
+                options: ["(a) Environmental sustainability is inimical to our objective of achieving a high rate of GDP growth.", "(b) Poverty eradication is not possible without a rapid economic growth and the consequent environmental degradation.", "(c) Maintaining high environmental standards is now a prerequisite for achieving a steady, sufficient and inclusive growth.", "(d) With large populations, rampant poverty and limited resources of today's world, environmental degradation cannot be prevented and inequalities are inevitable."],
+                answer: "(c)"
+            },
+            {
+                question: "A Question is given followed by two Statements I and II. Consider the Question and the Statements.<br>Question: What are the unique values of x and y, where x, y are distinct natural numbers?<br>Statement-I: x/y is odd.<br>Statement-II: xy = 12<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(c)"
+            },
+            {
+                question: "A certain amount was distributed among X, Y and Z.<br>Question: Who received the least amount?<br>Statement-I: X received 4/5 of what Y and Z together received.<br>Statement-II: Y received 2/7 of what X and Z together received.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(d)"
+            },
+            {
+                question: "If the average marks in a class are 60, then what is the number of students in the class?<br>Statement-I: The highest marks in the class are 70 and the lowest marks are 50.<br>Statement-II: Exclusion of highest and lowest marks from the class does not change the average.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(d)"
+            },
+            {
+                question: "There are three distinct prime numbers whose sum is a prime number.<br>Question: What are those three numbers?<br>Statement-I: Their sum is less than 23.<br>Statement-II: One of the numbers is 5.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(c)"
+            },
+            {
+                question: "Question: Is (x + y) an integer?<br>Statement-I: (2x + y) is an integer.<br>Statement-II: (x + 2y) is an integer.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(c)"
+            },
+            {
+                question: "A person buys three articles p, q and r for ₹ 50. The price of the article q is ₹ 16 which is the least.<br>Question: What is the price of the article p?<br>Statement-I: The cost of p is not more than that of r.<br>Statement-II: The cost of r is not more than that of p.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(c)"
+            },
+            {
+                question: "P, Q, R and S appeared in a test.<br>Question: Has P scored more marks than Q?<br>Statement-I: The sum of the marks scored by P and Q is equal to the sum of the marks scored by R and S.<br>Statement-II: The sum of the marks scored by P and S is more than the sum of the marks scored by Q and R.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(d)"
+            },
+            {
+                question: "Which one of the following statements best reflects the most logical and rational message conveyed by the above passage?",
+                options: ["(a) It is the poetry, not science or religion, which recognizes and accepts imperfections in humans.", "(b) Truth is revealed through science or religion and poetry is anathema to truth.", "(c) Poetry is romantic, imaginary and is about feeling whereas science and religion are about truth.", "(d) In a world of violence, tyranny and bigotry, poetry is a form of dynamic resistance."],
+                answer: "(d)"
+            },
+            {
+                question: "Based on the above passage, the following assumptions have been made:<br>1. The author of the passage believes that flowers are creations of Nature's luxury.<br>2. The author of the passage does not believe in the usefulness of flowers except as things of beauty.<br>Which of the assumptions given above is/are valid?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(b)"
+            },
+            {
+                question: "Age of each of P and Q is less than 100 years but more than 10 years. If you interchange the digits of the age of P, the number represents the age of Q.<br>Question: What is the difference of their ages?<br>Statement-I: The age of P is greater than the age of Q.<br>Statement-II: The sum of their ages is 11/6 times their difference.<br>Which one of the following is correct in respect of the above Question and the Statements?",
+                options: ["(a) The Question can be answered by using one of the Statements alone, but cannot be answered using the other Statement alone", "(b) The Question can be answered by using either Statement alone", "(c) The Question can be answered by using both the Statements together, but cannot be answered using either Statement alone", "(d) The Question cannot be answered even by using both the Statements together"],
+                answer: "(d)"
+            },
+            {
+                question: "A Main Statement is followed by four Statements labelled P, Q, R and S. Choose the ordered pair of the Statements where the first Statement implies the second, and the two Statements are logically consistent with the Main Statement.<br>Main Statement: Pradeep becomes either a Director or a Producer.<br>Statement P: Pradeep is a Director.<br>Statement Q: Pradeep is a Producer.<br>Statement R: Pradeep is not a Director.<br>Statement S: Pradeep is not a Producer.<br>Select the correct answer.",
+                options: ["(a) SP only", "(b) RQ only", "(c) Both SP and RQ", "(d) Neither SP nor RQ"],
+                answer: "(d)"
+            },
+            {
+                question: "If a + b means a - b; a - b means a × b; a × b means a + b; a ÷ b means a + b, then what is the value of 10 + 30 - 100 × 50 ÷ 25? (Operations are to be replaced simultaneously)",
+                options: ["(a) 15", "(b) 0", "(c) -15", "(d) -25"],
+                answer: "(c)"
+            },
+            {
+                question: "If P means 'greater than (>)'; Q means 'less than (<)'; R means 'not greater than (≤)'; S means 'not less than (≥)' and T means 'equal to (=)', then consider the following statements:<br>1. If 2x(S)3y and 3x(T)4z, then 9y(P)8z.<br>2. If x(Q)2y and y(R)z, then x(R)z.<br>Which of the statements given above is/are correct?",
+                options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
+                answer: "(d)"
+            },
+            {
+                question: "If in a certain code, 'ABC' is written as 24 and 'EFGH' is written as 1680, then how is 'JJKL' written in that code?",
+                options: ["(a) 11880", "(b) 11240", "(c) 7920", "(d) 5940"],
+                answer: "(a)"
+            },
+            {
+                question: "If in a certain code, 'POT' is written as ATOP and 'TRAP' is written as APART, then how is 'ARENA' written in that code?",
+                options: ["(a) AARENA", "(b) AANREA", "(c) AANEAR", "(d) AANERA"],
+                answer: "(d)"
+            },
+            {
+                question: "What will come in place of * in the sequence 3, 14, 39, 84, *, 258?",
+                options: ["(a) 150", "(b) 155", "(c) 160", "(d) 176"],
+                answer: "(b)"
+            },
+            {
+                question: "In some code, letters P, Q, R, S, T represent numbers 4, 5, 10, 12, 15. It is not known which letter represents which number. If Q - S = 2S and T = R + S + 3, then what is the value of P + R - T?",
+                options: ["(a) 1", "(b) 2", "(c) 3", "(d) Cannot be determined due to insufficient data"],
+                answer: "(b)"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = Array(80).fill(null);
+        let markedQuestions = Array(80).fill(false);
+        let timerInterval;
+        let seconds = 0;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                let minutes = Math.floor(seconds / 60);
+                let secs = seconds % 60;
+                document.getElementById('timer').textContent = `Time: ${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('questionContainer').innerHTML = `
+                <p class="mb-4">${question.question}</p>
+                ${question.options.map((option, index) => `
+                    <div class="mb-2">
+                        <input type="radio" name="answer" id="option${index}" value="${option}" ${userAnswers[currentQuestionIndex] === option ? 'checked' : ''}>
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `).join('')}
+            `;
+
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === 79 ? 'Finish' : 'Next';
+            document.getElementById('markBtn').textContent = markedQuestions[currentQuestionIndex] ? 'Unmark' : 'Mark for Review';
+
+            for (let i = 0; i < 80; i++) {
+                const btn = document.getElementById(`navBtn${i + 1}`);
+                btn.className = `px-3 py-1 rounded ${markedQuestions[i] ? 'bg-yellow-300 hover:bg-yellow-400' : userAnswers[i] ? 'bg-green-300 hover:bg-green-400' : 'bg-gray-300 hover:bg-gray-400'} ${currentQuestionIndex === i ? 'border-2 border-blue-500' : ''}`;
+            }
+        }
+
+        function saveAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+        }
+
+        function nextQuestion() {
+            saveAnswer();
+            if (currentQuestionIndex < 79) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                submitTest();
+            }
+        }
+
+        function prevQuestion() {
+            saveAnswer();
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function goToQuestion(index) {
+            saveAnswer();
+            currentQuestionIndex = index - 1;
+            displayQuestion();
+        }
+
+        function markQuestion() {
+            markedQuestions[currentQuestionIndex] = !markedQuestions[currentQuestionIndex];
+            displayQuestion();
+        }
+
+        function submitTest() {
+            saveAnswer();
+            clearInterval(timerInterval);
+
+            let correct = 0, wrong = 0, unattempted = 0;
+            let score = 0;
+
+            for (let i = 0; i < 80; i++) {
+                if (!userAnswers[i]) {
+                    unattempted++;
+                } else if (userAnswers[i] === questions[i].answer) {
+                    correct++;
+                    score += 2.5;
+                } else {
+                    wrong++;
+                    score -= 0.83;
+                }
+            }
+
+            score = Math.round(score * 100) / 100; // Round to 2 decimal places
+
+            document.getElementById('resultContainer').classList.remove('hidden');
+            document.getElementById('score').textContent = `Your Score: ${score}/200`;
+            document.getElementById('correct').textContent = `Correct Answers: ${correct}`;
+            document.getElementById('wrong').textContent = `Wrong Answers: ${wrong}`;
+            document.getElementById('unattempted').textContent = `Unattempted Questions: ${unattempted}`;
+            document.getElementById('submitBtn').classList.add('hidden');
+        }
+
+        startTimer();
+        displayQuestion();
+    </script>
+</body>
+</html>
