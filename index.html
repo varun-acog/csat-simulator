@@ -125,7 +125,7 @@
     <h1>UPSC Prelims CSAT Simulator - CSAT 2023 Set B</h1>
 
     <div id="timer-section">
-        <span id="timer">Time: 02:00:00</span>
+        <span id="timer">Time: 00:00:00</span>
     </div>
 
     <div id="main-container">
@@ -185,7 +185,7 @@
         let userAnswers = new Array(80).fill(null);
         let markedForReview = new Set();
         let timerInterval;
-        let timeRemaining = 2 * 60 * 60; // 2 hours in seconds
+        let timeElapsed = 0; // Start timer at 0 seconds
         let score = 0;
 
         // Load the CSAT 2023 Set B paper
@@ -240,18 +240,13 @@
             });
         }
 
-        // Start the timer
+        // Start the timer (count up)
         function startTimer() {
             timerInterval = setInterval(() => {
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    submitTest();
-                    return;
-                }
-                timeRemaining--;
-                const hours = Math.floor(timeRemaining / 3600);
-                const minutes = Math.floor((timeRemaining % 3600) / 60);
-                const seconds = timeRemaining % 60;
+                timeElapsed++;
+                const hours = Math.floor(timeElapsed / 3600);
+                const minutes = Math.floor((timeElapsed % 3600) / 60);
+                const seconds = timeElapsed % 60;
                 document.getElementById('timer').textContent = `Time: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }, 1000);
         }
