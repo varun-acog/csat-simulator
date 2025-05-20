@@ -74,6 +74,51 @@
         .incorrect {
             color: red;
         }
+        /* Layout for main content and tile view */
+        #main-container {
+            display: flex;
+            gap: 20px;
+        }
+        #content-section {
+            flex: 3;
+        }
+        #tile-section {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        #question-tiles {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .question-tile {
+            padding: 10px;
+            text-align: center;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .question-tile:hover {
+            background-color: #d0d0d0;
+        }
+        .current {
+            background-color: #007bff;
+            color: white;
+        }
+        .answered {
+            background-color: #28a745;
+            color: white;
+        }
+        .marked-for-review {
+            background-color: #ffc107;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -91,24 +136,35 @@
         <span id="timer">Time: 02:00:00</span>
     </div>
 
-    <div id="question-section">
-        <div id="question-number">Question 1 of 80</div>
-        <div id="passage"></div>
-        <div id="question"></div>
-    </div>
+    <div id="main-container">
+        <div id="content-section">
+            <div id="question-section">
+                <div id="question-number">Question 1 of 80</div>
+                <div id="passage"></div>
+                <div id="question"></div>
+            </div>
 
-    <div id="options-section">
-        <!-- Options will be dynamically populated -->
-    </div>
+            <div id="options-section">
+                <!-- Options will be dynamically populated -->
+            </div>
 
-    <div id="navigation">
-        <button id="previous-btn">Previous</button>
-        <button id="mark-for-review">Mark for Review</button>
-        <button id="next-btn">Next</button>
-    </div>
+            <div id="navigation">
+                <button id="previous-btn">Previous</button>
+                <button id="mark-for-review">Mark for Review</button>
+                <button id="next-btn">Next</button>
+            </div>
 
-    <div>
-        <button id="submit-test">Submit Test</button>
+            <div>
+                <button id="submit-test">Submit Test</button>
+            </div>
+        </div>
+
+        <div id="tile-section">
+            <h3>Questions</h3>
+            <div id="question-tiles">
+                <!-- Tiles will be dynamically populated -->
+            </div>
+        </div>
     </div>
 
     <div id="results-section">
@@ -147,6 +203,7 @@
             script.src = `${paperSelect}.js`;
             script.onload = () => {
                 questions = papers[paperSelect].questions;
+                populateQuestionTiles();
                 startTimer();
                 loadQuestion(currentQuestionIndex);
             };
@@ -154,6 +211,42 @@
                 alert('Error loading paper. Please try again.');
             };
             document.head.appendChild(script);
+        }
+
+        // Populate the question tiles
+        function populateQuestionTiles() {
+            const questionTiles = document.getElementById('question-tiles');
+            questionTiles.innerHTML = '';
+            for (let i = 0; i < questions.length; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'question-tile';
+                tile.textContent = i + 1;
+                tile.dataset.index = i;
+                tile.onclick = () => {
+                    currentQuestionIndex = parseInt(tile.dataset.index);
+                    loadQuestion(currentQuestionIndex);
+                    updateTiles();
+                };
+                questionTiles.appendChild(tile);
+            }
+            updateTiles();
+        }
+
+        // Update tile styles based on state
+        function updateTiles() {
+            const tiles = document.querySelectorAll('.question-tile');
+            tiles.forEach((tile, index) => {
+                tile.classList.remove('current', 'answered', 'marked-for-review');
+                if (index === currentQuestionIndex) {
+                    tile.classList.add('current');
+                }
+                if (userAnswers[index] !== null) {
+                    tile.classList.add('answered');
+                }
+                if (markedForReview.has(index)) {
+                    tile.classList.add('marked-for-review');
+                }
+            });
         }
 
         // Start the timer
@@ -193,6 +286,7 @@
                 input.checked = userAnswers[index] === option;
                 input.onchange = () => {
                     userAnswers[index] = option;
+                    updateTiles();
                 };
                 const label = document.createElement('label');
                 label.htmlFor = `option-${i}`;
@@ -205,6 +299,8 @@
             // Update button states
             document.getElementById('previous-btn').disabled = index === 0;
             document.getElementById('next-btn').disabled = index === questions.length - 1;
+
+            updateTiles();
         }
 
         // Navigation
@@ -225,6 +321,7 @@
         document.getElementById('mark-for-review').onclick = () => {
             markedForReview.add(currentQuestionIndex);
             alert(`Question ${currentQuestionIndex + 1} marked for review.`);
+            updateTiles();
         };
 
         // Submit the test
@@ -273,10 +370,7 @@
             });
 
             // Display results
-            document.getElementById('question-section').style.display = 'none';
-            document.getElementById('options-section').style.display = 'none';
-            document.getElementById('navigation').style.display = 'none';
-            document.getElementById('submit-test').style.display = 'none';
+            document.getElementById('main-container').style.display = 'none';
             document.getElementById('timer-section').style.display = 'none';
             document.getElementById('paper-selection').style.display = 'none';
 
@@ -297,10 +391,7 @@
             markedForReview.clear();
             score = 0;
             document.getElementById('results-section').style.display = 'none';
-            document.getElementById('question-section').style.display = 'block';
-            document.getElementById('options-section').style.display = 'block';
-            document.getElementById('navigation').style.display = 'block';
-            document.getElementById('submit-test').style.display = 'block';
+            document.getElementById('main-container').style.display = 'flex';
             document.getElementById('timer-section').style.display = 'block';
             document.getElementById('paper-selection').style.display = 'block';
             loadPaper();
