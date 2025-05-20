@@ -14,7 +14,7 @@
             text-align: center;
             color: #333;
         }
-        #paper-selection, #timer-section, #question-section, #options-section, #navigation, #results-section {
+        #timer-section, #question-section, #options-section, #navigation, #results-section {
             margin: 20px 0;
             padding: 20px;
             background-color: #fff;
@@ -122,15 +122,7 @@
     </style>
 </head>
 <body>
-    <h1>UPSC Prelims CSAT Simulator</h1>
-
-    <div id="paper-selection">
-        <label for="paper-select">Select Paper:</label>
-        <select id="paper-select">
-            <option value="csat2024A">CSAT 2024 Set A</option>
-            <option value="csat2023B">CSAT 2023 Set B</option>
-        </select>
-    </div>
+    <h1>UPSC Prelims CSAT Simulator - CSAT 2023 Set B</h1>
 
     <div id="timer-section">
         <span id="timer">Time: 02:00:00</span>
@@ -196,19 +188,18 @@
         let timeRemaining = 2 * 60 * 60; // 2 hours in seconds
         let score = 0;
 
-        // Load paper dynamically
+        // Load the CSAT 2023 Set B paper
         function loadPaper() {
-            const paperSelect = document.getElementById('paper-select').value;
             const script = document.createElement('script');
-            script.src = `${paperSelect}.js`;
+            script.src = 'csat2023B.js';
             script.onload = () => {
-                questions = papers[paperSelect].questions;
+                questions = papers['csat2023B'].questions;
                 populateQuestionTiles();
                 startTimer();
                 loadQuestion(currentQuestionIndex);
             };
             script.onerror = () => {
-                alert('Error loading paper. Please try again.');
+                alert('Error loading CSAT 2023 Set B. Please ensure the file csat2023B.js is available.');
             };
             document.head.appendChild(script);
         }
@@ -372,7 +363,6 @@
             // Display results
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('timer-section').style.display = 'none';
-            document.getElementById('paper-selection').style.display = 'none';
 
             const resultsSection = document.getElementById('results-section');
             resultsSection.style.display = 'block';
@@ -381,21 +371,6 @@
             document.getElementById('correct-answers').textContent = `Correct Answers: ${correct}`;
             document.getElementById('incorrect-answers').textContent = `Incorrect Answers: ${incorrect}`;
         }
-
-        // Load the selected paper when the selection changes
-        document.getElementById('paper-select').onchange = () => {
-            clearInterval(timerInterval);
-            timeRemaining = 2 * 60 * 60;
-            currentQuestionIndex = 0;
-            userAnswers = new Array(80).fill(null);
-            markedForReview.clear();
-            score = 0;
-            document.getElementById('results-section').style.display = 'none';
-            document.getElementById('main-container').style.display = 'flex';
-            document.getElementById('timer-section').style.display = 'block';
-            document.getElementById('paper-selection').style.display = 'block';
-            loadPaper();
-        };
 
         // Initial load
         loadPaper();
