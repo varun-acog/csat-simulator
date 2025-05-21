@@ -14,7 +14,7 @@
             text-align: center;
             color: #333;
         }
-        #timer-section, #question-section, #options-section, #navigation, #results-section {
+        #paper-selection, #timer-section, #question-section, #options-section, #navigation, #results-section {
             margin: 20px 0;
             padding: 20px;
             background-color: #fff;
@@ -119,10 +119,22 @@
             background-color: #ffc107;
             color: black;
         }
+        select {
+            padding: 5px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
-    <h1>UPSC Prelims CSAT Simulator - CSAT 2023 Set B</h1>
+    <h1 id="simulator-title">UPSC Prelims CSAT Simulator</h1>
+
+    <div id="paper-selection">
+        <label for="paper-select">Select Paper: </label>
+        <select id="paper-select" onchange="loadSelectedPaper()">
+            <option value="csat2023B">CSAT 2023 Set B</option>
+            <option value="csat2022A">CSAT 2022 Set A</option>
+        </select>
+    </div>
 
     <div id="timer-section">
         <span id="timer">Time: 00:00:00</span>
@@ -179,29 +191,43 @@
         </table>
     </div>
 
+    <!-- Load both paper scripts -->
+    <script src="csat2023B.js"></script>
+    <script src="csat2022A.js"></script>
+
     <script>
         let currentQuestionIndex = 0;
         let questions = [];
         let userAnswers = new Array(80).fill(null);
         let markedForReview = new Set();
         let timerInterval;
-        let timeElapsed = 0; // Start timer at 0 seconds
+        let timeElapsed = 0;
         let score = 0;
+        let selectedPaper = 'csat2023B'; // Default paper
 
-        // Load the CSAT 2023 Set B paper
-        function loadPaper() {
-            const script = document.createElement('script');
-            script.src = 'csat2023B.js';
-            script.onload = () => {
-                questions = papers['csat2023B'].questions;
-                populateQuestionTiles();
-                startTimer();
-                loadQuestion(currentQuestionIndex);
-            };
-            script.onerror = () => {
-                alert('Error loading CSAT 2023 Set B. Please ensure the file csat2023B.js is available.');
-            };
-            document.head.appendChild(script);
+        // Load the selected paper
+        function loadSelectedPaper() {
+            selectedPaper = document.getElementById('paper-select').value;
+
+            // Reset test state
+            currentQuestionIndex = 0;
+            userAnswers = new Array(80).fill(null);
+            markedForReview.clear();
+            clearInterval(timerInterval);
+            timeElapsed = 0;
+            document.getElementById('timer').textContent = 'Time: 00:00:00';
+            document.getElementById('results-section').style.display = 'none';
+            document.getElementById('main-container').style.display = 'flex';
+            document.getElementById('timer-section').style.display = 'block';
+
+            // Update title
+            document.getElementById('simulator-title').textContent = `UPSC Prelims CSAT Simulator - ${papers[selectedPaper].title.split(' - ')[1]}`;
+
+            // Load questions
+            questions = papers[selectedPaper].questions;
+            populateQuestionTiles();
+            startTimer();
+            loadQuestion(currentQuestionIndex);
         }
 
         // Populate the question tiles
@@ -368,7 +394,7 @@
         }
 
         // Initial load
-        loadPaper();
+        loadSelectedPaper();
     </script>
 </body>
 </html>
