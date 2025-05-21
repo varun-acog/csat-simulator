@@ -1,7 +1,11 @@
-const papers = {
-    csat2022A: {
-        title: "UPSC Prelims CSAT 2022 Simulator (Paper II - Set A)",
-        questions: [
+if (typeof window.papers === 'undefined') {
+    window.papers = {};
+}
+
+// Add CSAT 2022 data
+window.papers.csat2022A = {
+    title: "UPSC Prelims CSAT 2022 Simulator (Paper II - Set A)",
+    questions: [
             {
                 passage: "Passage-1<br>The main threat to maintaining progress in human development comes from the increasingly evident unsustainability of production and consumption patterns. Current production models rely heavily on fossil fuels. We now know that this is unsustainable because the resources are finite. The close link between economic growth and greenhouse gas emissions needs to be severed for human development to become truly sustainable. Some developed countries have begun to alleviate the worst effects by expanding recycling and investing in public transport and infrastructure. But most developing countries are hampered by the high costs and low availability of clean energy sources. Developed countries need to support developing countries' transition to sustainable human development.",
                 question: "Unsustainability in production pattern is due to which of the following?<br>1. Heavy dependence on fossil fuels<br>2. Limited availability of resources<br>3. Expansion of recycling<br>Select the correct answer using the code given below.",
@@ -483,5 +487,11 @@ const papers = {
                 answer: "(c)" // Updated to 80-C
             }
         ]
-    }
+    
 };
+
+// // Merge into global papers object
+// if (typeof papers === 'undefined') {
+//     window.papers = {};
+// }
+// Object.assign(window.papers, csat2022AData);

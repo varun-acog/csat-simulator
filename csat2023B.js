@@ -1,7 +1,11 @@
-const papers = {
-    csat2023B: {
-        title: "UPSC Prelims CSAT 2023 Simulator (Paper II - Set B)",
-        questions: [
+if (typeof window.papers === 'undefined') {
+    window.papers = {};
+}
+
+// Add CSAT 2023 data
+window.papers.csat2023B = {
+    title: "UPSC Prelims CSAT 2023 Simulator (Paper II - Set B)",
+    questions: [
             {
                 passage: "Passage-1<br>In India, the segregation of municipal waste at source is rare. Recycling is mostly with the informal sector. More than three-fourths of the municipal budget goes into collection and transportation, which leaves very little for processing/resource recovery and disposal. Where does waste-to-energy fit into all this? Ideally it fits in the chain after segregation (between wet waste and the rest), collection, recycling, and before getting to the landfill. Which technology is most appropriate in converting waste to energy depends on what is in the waste (that is biodegradable versus non-biodegradable component) and its calorific value. The biodegradable component of India's municipal solid waste is a little over 50 per cent, and biomethanation offers a major solution for processing this.",
                 question: "Based on the above passage, the following assumptions have been made:<br>1. Collection, processing and segregation of municipal waste should be with government agencies.<br>2. Resource recovery and recycling require technological inputs that can be best handled by private sector enterprises.<br>Which of the assumptions given above is/are correct?",
@@ -483,5 +487,4 @@ const papers = {
                 answer: "(b)" // Key: 80-B
             }
         ]
-    }
 };
