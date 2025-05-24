@@ -250,7 +250,7 @@ window.papers['csat2020A'] = {
             passage: "Economic liberalization in India was shaped largely by the economic problems of the government than by the economic priorities of the people or by the long-term development objectives. Thus, there were limitations in conception and design which have been subsequently validated by experience. Jobless growth, persistent poverty and rising inequality have mounted as problems since economic liberalization began. And all these years later, four quiet crises confront the economy: agriculture, infrastructure, industrialization and education as constraints on the country’s future prospects. These problems must be resolved if economic growth has to be sustained and transformed into meaningful development.",
             question: "46. With reference to the above passage, the following assumptions have been made:<br>1. India’s economy needs to be greatly integrated with global economy so as to create large number of jobs and to sustain its growth momentum.<br>2. Economic liberalization would cause large economic growth which would reduce poverty and create sufficient employment in the long run.<br>Which of the above assumptions is/are valid?",
             options: ["(a) 1 only", "(b) 2 only", "(c) Both 1 and 2", "(d) Neither 1 nor 2"],
-            answer: "(d)"
+            answer: "(b)"
         },
         {
             question: "47. A shop owner offers the following discount options on an article to a customer:<br>1. Successive discounts of 10% and 20%, and then pay a service tax of 10%.<br>2. Successive discounts of 20% and 10%, and then pay a service tax of 10%.<br>3. Pay a service tax of 10% first, then successive discounts of 20% and 10%.<br>Which one of the following is correct?",
